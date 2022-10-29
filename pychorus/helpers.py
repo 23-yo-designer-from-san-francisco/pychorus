@@ -2,6 +2,8 @@ import librosa
 import numpy as np
 import scipy.signal
 import soundfile as sf
+import subprocess
+import shlex
 
 
 from pychorus.similarity_matrix import TimeTimeSimilarityMatrix, TimeLagSimilarityMatrix, Line
@@ -182,8 +184,12 @@ def find_and_output_chorus(input_file, output_file, clip_length=15):
         chorus_start // 60, chorus_start % 60))
 
     if output_file is not None:
-        chorus_wave_data = song_wav_data[int(chorus_start*sr) : int((chorus_start+clip_length)*sr)]
-        sf.write(output_file, chorus_wave_data, sr)
+        start = int(chorus_start)
+        end = int(start+clip_length)
+        print(f'Start time: {start} Finish time: {end}')
+        # chorus_wave_data = song_wav_data[int(chorus_start*sr) : int((chorus_start+clip_length)*sr)]
+        # sf.write(output_file, chorus_wave_data, sr)
         #librosa.output.write_wav(output_file, chorus_wave_data, sr)
+        subprocess.call(f'/opt/homebrew/bin/ffmpeg -ss {start} -i {shlex.quote(input_file)} -t {end-start} -c copy {shlex.quote(output_file)}')
 
     return chorus_start
