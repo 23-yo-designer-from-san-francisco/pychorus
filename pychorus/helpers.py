@@ -190,6 +190,9 @@ def find_and_output_chorus(input_file, output_file, clip_length=15):
         # chorus_wave_data = song_wav_data[int(chorus_start*sr) : int((chorus_start+clip_length)*sr)]
         # sf.write(output_file, chorus_wave_data, sr)
         #librosa.output.write_wav(output_file, chorus_wave_data, sr)
-        subprocess.call(f'/opt/homebrew/bin/ffmpeg -ss {start} -i {shlex.quote(input_file)} -t {end-start} -c copy {shlex.quote(output_file)}')
+        subprocess.call([
+            'ffmpeg', '-ss', str(start), '-i', input_file, '-map', '0:a',
+             '-t', str(end-start), '-c:a', 'copy', output_file
+        ])
 
     return chorus_start
